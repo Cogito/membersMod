@@ -1,5 +1,7 @@
 
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 import java.util.Date;
 
@@ -13,13 +15,14 @@ public class membersMod extends Plugin {
 	protected final Logger log = Logger.getLogger("Minecraft");
 	protected String name = "membersMod";
 	protected String version = "0.1";
+	public DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
 	
 	/**
 	 * This must be called to setup the plug-in!
 	 * @param name - The name for the config/logfile.
 	 */
 	public membersMod() {
-		config = new PropertiesFile(name+".txt");
+		config = new PropertiesFile("plugins/"+name+".txt");
 		reloadConfig();
 	}
 
@@ -104,7 +107,7 @@ public class membersMod extends Plugin {
 		
 		@Override
 		public void onLogin(Player player) {
-			player.sendMessage(Colors.Yellow + "Last login was: "+getLastLogin(player));
+			player.sendMessage(Colors.Yellow + "Last login was on "+getLastLogin(player));
 
 		}
 		
@@ -123,6 +126,7 @@ public class membersMod extends Plugin {
 	}
 
 	public String getLastLogin(Player player) {
+		// gets the last login time, or if that doesn't exist, sets last login to now
 		return config.getString(player.getName(), dateNow());
 	}
 	
@@ -131,6 +135,10 @@ public class membersMod extends Plugin {
 	}
 
 	protected String dateNow() {
-		return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(new Date());
+		return dateFormat.format(new Date());
+	}
+	
+	protected Date dateFromSring(String dateString) throws ParseException{
+		return dateFormat.parse(dateString);
 	}
 }

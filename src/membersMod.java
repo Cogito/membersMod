@@ -7,20 +7,19 @@ import java.util.Date;
  * @author Andrew Ardill
  *
  */
-public abstract class membersMod extends Plugin {
+public class membersMod extends Plugin {
 	private Listener listener = new Listener(this);
 	protected PropertiesFile config;
 	protected final Logger log = Logger.getLogger("Minecraft");
 	protected String name = "membersMod";
 	protected String version = "0.1";
-
+	
 	/**
 	 * This must be called to setup the plug-in!
 	 * @param name - The name for the config/logfile.
 	 */
-	public membersMod(String name) {
+	public membersMod() {
 		config = new PropertiesFile(name+".txt");
-		this.name = name;
 		reloadConfig();
 	}
 

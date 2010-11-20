@@ -1,30 +1,64 @@
 
+import java.sql.SQLException;
+import java.sql.SQLInput;
+import java.sql.SQLOutput;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Logger;
 
+
 /**
  * @author Andrew Ardill
  *
  */
-public class membersMod extends Plugin {
+public class MembersMod extends Plugin {
 	private Listener listener = new Listener(this);
 	protected PropertiesFile config;
 	protected final Logger log = Logger.getLogger("Minecraft");
-	protected String name = "membersMod";
+	protected String name = "MembersMod";
 	protected String version = "0.1";
 	public DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
+	private PluginData data;
 	
 	/**
 	 * This must be called to setup the plug-in!
 	 * @param name - The name for the config/logfile.
 	 */
-	public membersMod() {
+	public MembersMod() {
+		//data = new PluginData(name, true);
+		//data.specifyDataObject(MembersModData.class);
+		//data.initialise();
 		config = new PropertiesFile("plugins/"+name+".txt");
 		reloadConfig();
 	}
 
+	private class MembersModData extends DataObject{
+		private String user;
+		private String lastlogin;
+
+		public MembersModData(String user, String lastlogin){
+			super();
+			this.user = user;
+			this.lastlogin = lastlogin;
+			
+		}
+
+		public void read(SQLInput stream, String typeName) throws SQLException {
+			this.user = stream.readString();
+			this.lastlogin = stream.readString();
+		}
+		public void write(SQLOutput stream) throws SQLException {
+			stream.writeString(this.user);
+			stream.writeString(this.lastlogin);
+			
+		}
+		@Override
+		public String tableDescription() {
+			return "user varchar(32), lastlogin varchar(32)";
+		}
+
+	}
 	/**
 	 * This is called when the plug-in is enabled.
 	 */
@@ -97,10 +131,10 @@ public class membersMod extends Plugin {
 	}
 	
 	public class Listener extends PluginListener {
-		membersMod p;
+		MembersMod p;
 
 		// This controls the accessibility of functions / variables from the main class.
-		public Listener(membersMod plugin) {
+		public Listener(MembersMod plugin) {
 			p = plugin;
 		}
 		
@@ -131,6 +165,8 @@ public class membersMod extends Plugin {
 	
 	public void setLastLogin(Player player) {
 		config.setString(player.getName(), dateNow());
+		//MembersModData mydata = new MembersModData(player.getName(), dateNow());
+		//data.addRow(mydata);
 	}
 
 	protected String dateNow() {
